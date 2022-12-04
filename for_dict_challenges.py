@@ -5,6 +5,8 @@
 # Маша: 2
 # Петя: 2
 
+from collections import Counter
+
 students = [
     {'first_name': 'Вася'},
     {'first_name': 'Петя'},
@@ -12,7 +14,11 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Петя'},
 ]
-# ???
+result_list = []
+for student in students:
+    result_list.append(student['first_name'])
+for student in Counter(result_list):
+    print(f'{student}: {Counter(result_list)[student]}')
 
 
 # Задание 2
@@ -26,7 +32,10 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Оля'},
 ]
-# ???
+result_list = []
+for student in students:
+    result_list.append(student['first_name'])
+print(f'Самое частое имя среди учеников: {Counter(result_list).most_common(1)[0][0]}')
 
 
 # Задание 3
