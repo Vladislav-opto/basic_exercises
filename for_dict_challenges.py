@@ -14,28 +14,37 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Петя'},
 ]
-result_list = []
-for student in students:
-    result_list.append(student['first_name'])
-for student in Counter(result_list):
-    print(f'{student}: {Counter(result_list)[student]}')
+
+result_students1 = [
+    person[term]
+    for person in students
+    for term in person
+    if term == "first_name"
+]
+counter_result = Counter(result_students1)
+for student in counter_result:
+    print(f'{student}: {counter_result[student]}')
 
 
 # Задание 2
 # Дан список учеников, нужно вывести самое часто повторящееся имя
 # Пример вывода:
 # Самое частое имя среди учеников: Маша
-students = [
+students2 = [
     {'first_name': 'Вася'},
     {'first_name': 'Петя'},
     {'first_name': 'Маша'},
     {'first_name': 'Маша'},
     {'first_name': 'Оля'},
 ]
-result_list = []
-for student in students:
-    result_list.append(student['first_name'])
-print(f'Самое частое имя среди учеников: {Counter(result_list).most_common(1)[0][0]}')
+result_students2 = [
+    person[term]
+    for person in students2
+    for term in person
+    if term == "first_name"
+]
+counter_result = Counter(result_students2).most_common(1)
+print(f'Самое частое имя среди учеников: {counter_result[0][0]}')
 
 
 # Задание 3
@@ -60,8 +69,15 @@ school_students = [
         {'first_name': 'Саша'},
     ],
 ]
-# ???
-
+for number, student_class in enumerate(school_students, start=1):
+    result_students3 = [
+        person[term]
+        for person in student_class
+        for term in person
+        if term == "first_name"
+        ]
+    counter_result3 = Counter(result_students3).most_common(1)    
+    print(f'Самое частое имя в классе {number}: {counter_result3[0][0]}')
 
 # Задание 4
 # Для каждого класса нужно вывести количество девочек и мальчиков в нём.
@@ -72,7 +88,7 @@ school_students = [
 school = [
     {'class': '2a', 'students': [{'first_name': 'Маша'}, {'first_name': 'Оля'}]},
     {'class': '2б', 'students': [{'first_name': 'Олег'}, {'first_name': 'Миша'}]},
-    {'class': '2б', 'students': [{'first_name': 'Даша'}, {'first_name': 'Олег'}, {'first_name': 'Маша'}]},
+    {'class': '2в', 'students': [{'first_name': 'Даша'}, {'first_name': 'Олег'}, {'first_name': 'Маша'}]},
 ]
 is_male = {
     'Олег': True,
@@ -81,24 +97,69 @@ is_male = {
     'Миша': True,
     'Даша': False,
 }
-# ???
+for student_class in school:
+    class_name = student_class['class']
+    quantity_male = 0
+    quantity_female = 0
+    result_students4 = [
+        person[term]
+        for person in student_class['students']
+        for term in person
+        if term == "first_name"
+        ]
+    for person in result_students4:
+        if person in is_male and is_male[person]:
+            quantity_male += 1
+        elif person in is_male and not is_male[person]:
+            quantity_female += 1
+        else:
+            break
+    print(f'Класс {class_name}: девочки {quantity_female}, мальчики {quantity_male}')
 
 
 # Задание 5
-# По информации о учениках разных классов нужно найти класс, в котором больше всего девочек и больше всего мальчиков
+# По информации об учениках разных классов нужно найти класс, в котором больше всего девочек и больше всего мальчиков
 # Пример вывода:
 # Больше всего мальчиков в классе 3c
 # Больше всего девочек в классе 2a
 
-school = [
+school5 = [
     {'class': '2a', 'students': [{'first_name': 'Маша'}, {'first_name': 'Оля'}]},
     {'class': '3c', 'students': [{'first_name': 'Олег'}, {'first_name': 'Миша'}]},
 ]
-is_male = {
+is_male5 = {
     'Маша': False,
     'Оля': False,
     'Олег': True,
     'Миша': True,
 }
-# ???
-
+list_class_sex = {}
+MALE = 0
+FEMALE = 0
+for student_class in school5:
+    class_name5 = student_class['class']
+    quantity_male5 = 0
+    quantity_female5 = 0
+    result_students5 = [
+        person[term]
+        for person in student_class['students']
+        for term in person
+        if term == "first_name"
+        ]
+    quantity_male = 0
+    quantity_female = 0
+    for person in result_students5:
+        if person in is_male5 and is_male5[person]:
+            quantity_male5 += 1
+        elif person in is_male5 and not is_male5[person]:
+            quantity_female5 += 1
+        else:
+            break
+        if quantity_male5 > MALE:
+            MALE = quantity_male5
+            class_male = class_name5
+        if quantity_female5 > FEMALE:
+            FEMALE = quantity_female5
+            class_female = class_name5
+print(f'Больше всего девочек в классе {class_female}')
+print(f'Больше всего мальчиков в классе {class_male}')

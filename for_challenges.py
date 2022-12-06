@@ -29,10 +29,7 @@ is_male = {
 names = ['Оля', 'Петя', 'Вася', 'Маша']
 for name in names:
     if name in is_male:
-        if is_male[name]:
-            print(f'{name}: мужик')
-        else:
-            print(f'{name}: женщина')    
+        print(f'{name}: мужик' if is_male[name] else f'{name}: женщина')
     else:
         print('Ошибка')
 
@@ -50,13 +47,8 @@ groups = [
     ['Оля', 'Петя', 'Гриша'],
 ]
 print(f'Всего {len(groups)} группы')
-if len(groups) != 0:
-    counter = 0
-    for group in groups:
-        counter += 1
-        print(f'Группа {counter}: {len(group)} ученика')    
-else:
-    print('Никого нет!')
+for number, group in enumerate(groups, start=1):
+    print(f'Группа {number}: {len(group)} ученика')    
 
 
 # Задание 5
@@ -70,7 +62,5 @@ groups = [
     ['Оля', 'Петя', 'Гриша'],
     ['Вася', 'Маша', 'Саша', 'Женя'],
 ]
-counter = 0
-for group in groups:
-    counter += 1
-    print(f'Группа {counter}: {", ".join (group)}')
+for number, group in enumerate(groups, start=1):
+    print(f'Группа {number}: {", ".join (group)}')
