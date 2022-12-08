@@ -40,7 +40,7 @@ list_of_length_words = [
     len(word)
     for word in words
 ]
-if len(words) != 0:
+if words:
     average_length_word = sum(list_of_length_words)/len(words)
 else:
     print("Пустое предложение!")
