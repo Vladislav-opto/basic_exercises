@@ -14,22 +14,20 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Петя'},
 ]
-
-result_students1 = [
-    person[term]
+list_of_students = [
+    person['first_name']
     for person in students
-    for term in person
-    if term == "first_name"
 ]
-counter_result = Counter(result_students1)
-for student in counter_result:
-    print(f'{student}: {counter_result[student]}')
+list_of_quantity_student_names = Counter(list_of_students)
+for student in list_of_quantity_student_names:
+    print(f'{student}: {list_of_quantity_student_names[student]}')
 
 
 # Задание 2
 # Дан список учеников, нужно вывести самое часто повторящееся имя
 # Пример вывода:
 # Самое частое имя среди учеников: Маша
+
 students = [
     {'first_name': 'Вася'},
     {'first_name': 'Петя'},
@@ -37,14 +35,12 @@ students = [
     {'first_name': 'Маша'},
     {'first_name': 'Оля'},
 ]
-result_students = [
-    person[term]
+list_of_students = [
+    person['first_name']
     for person in students
-    for term in person
-    if term == "first_name"
 ]
-counter_result = Counter(result_students).most_common(1)
-print(f'Самое частое имя среди учеников: {counter_result[0][0]}')
+most_common_name = Counter(list_of_students).most_common(1)
+print(f'Самое частое имя среди учеников: {most_common_name[0][0]}')
 
 
 # Задание 3
@@ -70,14 +66,12 @@ school_students = [
     ],
 ]
 for number, student_class in enumerate(school_students, start=1):
-    result_students = [
-        person[term]
+    list_of_students = [
+        person['first_name']
         for person in student_class
-        for term in person
-        if term == "first_name"
-        ]
-    counter_result = Counter(result_students).most_common(1)    
-    print(f'Самое частое имя в классе {number}: {counter_result[0][0]}')
+    ]
+    most_common_name = Counter(list_of_students).most_common(1)    
+    print(f'Самое частое имя в классе {number}: {most_common_name[0][0]}')
 
 # Задание 4
 # Для каждого класса нужно вывести количество девочек и мальчиков в нём.
@@ -99,22 +93,19 @@ is_male = {
 }
 for student_class in school:
     class_name = student_class['class']
-    quantity_male = 0
-    quantity_female = 0
-    result_students = [
-        person[term]
+    list_of_students = [
+        person['first_name']
         for person in student_class['students']
-        for term in person
-        if term == "first_name"
-        ]
-    for person in result_students:
-        if person in is_male and is_male[person]:
-            quantity_male += 1
-        elif person in is_male and not is_male[person]:
-            quantity_female += 1
-        else:
-            break
-    print(f'Класс {class_name}: девочки {quantity_female}, мальчики {quantity_male}')
+    ]
+    boys_in_class = [
+        name for name in list_of_students
+        if name in is_male and is_male[name]
+    ]
+    girls_in_class = [
+        name for name in list_of_students
+        if name in is_male and not is_male[name]
+    ]
+    print(f'Класс {class_name}: девочки {len(girls_in_class)}, мальчики {len(boys_in_class)}')
 
 
 # Задание 5
@@ -133,28 +124,25 @@ is_male = {
     'Олег': True,
     'Миша': True,
 }
-list_class_sex = {}
-MALE = 0
-FEMALE = 0
+
+MALE = 0    #Илья, я применил тут глобальные переменные. Насколько это здесь уместно? 
+FEMALE = 0  #Я привык работать со сдвиговыми регистрами (логика ПЛИСов, например), поэтому подход с глобальной переменной мне понятен
+            #Но может есть более правильный способ решения?
 for student_class in school:
     class_name = student_class['class']
     quantity_male = 0
     quantity_female = 0
-    result_students = [
-        person[term]
+    list_of_students = [
+        person['first_name']
         for person in student_class['students']
-        for term in person
-        if term == "first_name"
-        ]
+    ]
     quantity_male = 0
     quantity_female = 0
-    for person in result_students:
+    for person in list_of_students:
         if person in is_male and is_male[person]:
             quantity_male += 1
         elif person in is_male and not is_male[person]:
             quantity_female += 1
-        else:
-            break
         if quantity_male > MALE:
             MALE = quantity_male
             class_male = class_name

@@ -13,11 +13,11 @@ print(word.count('а'))
 word = 'Архангельск'
 vowels = set('аоуыэеёиюя')
 word = word.lower()
-counter = 0
-for letter in word:
-    if letter in vowels:
-        counter += 1
-print (counter)
+list_of_vowels_in_word = [
+    n for n in word
+    if n in vowels
+]
+print(len(list_of_vowels_in_word))
 
 
 # Вывести количество слов в предложении
@@ -36,11 +36,12 @@ for word in words:
 # Вывести усреднённую длину слова в предложении
 sentence = 'Мы приехали в гости'
 words = sentence.split()
-summ = 0
-for word in words:
-    summ += len(word)
-if summ != 0:
-    average = summ / len(words)
-    print(average)
+list_of_length_words = [
+    len(word)
+    for word in words
+]
+if len(words) != 0:
+    average_length_word = sum(list_of_length_words)/len(words)
 else:
     print("Пустое предложение!")
+print(average_length_word)
