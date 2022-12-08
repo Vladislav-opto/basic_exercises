@@ -35,6 +35,7 @@ import uuid
 import datetime
 
 import lorem
+from collections import Counter
 
 
 def generate_chat_history():
@@ -55,5 +56,25 @@ def generate_chat_history():
     return messages
 
 
+def user_with_the_most_posts(messages: list) -> int:
+    sender_list = []
+    for message in messages:
+        sender_list.append(message['sent_by'])
+    id_max_number_messages = int(Counter(sender_list).most_common(1)[0][0])
+    return id_max_number_messages
+
+
+def post_with_the_most_reply(messages: list) -> str:
+    reply_for_list = []
+    for message in messages:
+        if message['reply_for']:
+            reply_for_list.append(message['reply_for'])
+    id_max_reply_message = Counter(reply_for_list).most_common(1)[0][0]
+    for message in messages:
+        if message['id'] == id_max_reply_message:
+            id_user_max_reply_for = message['sent_by']
+    return id_user_max_reply_for
+
 if __name__ == "__main__":
-    print(generate_chat_history())
+    print(user_with_the_most_posts(generate_chat_history()))
+    print(post_with_the_most_reply(generate_chat_history()))
