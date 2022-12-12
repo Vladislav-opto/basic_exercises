@@ -57,24 +57,28 @@ def generate_chat_history():
 
 
 def user_with_the_most_posts(messages: list) -> int:
-    sender_list = []
-    for message in messages:
-        sender_list.append(message['sent_by'])
+    sender_list = [
+        message['sent_by']
+        for message in messages
+    ]
     id_max_number_messages = int(Counter(sender_list).most_common(1)[0][0])
     return id_max_number_messages
 
 
 def post_with_the_most_reply(messages: list) -> str:
-    reply_for_list = []
-    for message in messages:
-        if message['reply_for']:
-            reply_for_list.append(message['reply_for'])
+    reply_for_list = [
+        message['reply_for']
+        for message in messages
+        if message['reply_for']
+    ]
     id_max_reply_message = Counter(reply_for_list).most_common(1)[0][0]
     for message in messages:
         if message['id'] == id_max_reply_message:
             id_user_max_reply_for = message['sent_by']
+            break
     return id_user_max_reply_for
 
 if __name__ == "__main__":
-    print(user_with_the_most_posts(generate_chat_history()))
-    print(post_with_the_most_reply(generate_chat_history()))
+    messages = generate_chat_history()
+    print(f'ID пользователя, отправившего больше всего сообщений: {user_with_the_most_posts(messages)}')
+    print(f'ID пользователя, на сообщения которого больше всего отвечали: {post_with_the_most_reply(messages)}')
