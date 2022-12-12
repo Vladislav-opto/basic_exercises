@@ -96,8 +96,33 @@ def users_with_the_highest_views(messages: list) -> str:
     return str(ids_max_seen_by).strip('[]')
 
 
+def the_busiest_time(messages: list) -> str:
+    dict_of_lists_sent = {}
+    sent_morning = [
+       message['sent_by'] 
+       for message in messages
+       if message['sent_at'].hour <= 12
+    ]
+    dict_of_lists_sent["утром"] = len(sent_morning)
+    sent_afternoon = [
+        message['sent_by'] 
+        for message in messages
+        if message['sent_at'].hour > 12 and 
+        message['sent_at'].hour < 18
+    ]
+    dict_of_lists_sent["днем"] = len(sent_afternoon)
+    sent_evening = [
+       message['sent_by'] 
+       for message in messages
+       if message['sent_at'].hour >= 18
+    ]
+    dict_of_lists_sent["вечером"] = len(sent_evening)
+    return max(dict_of_lists_sent, key=dict_of_lists_sent.get)
+
+
 if __name__ == "__main__":
     messages = generate_chat_history()
     print(f'ID пользователя, отправившего больше всего сообщений: {user_with_the_most_posts(messages)}')
     print(f'ID пользователя, на сообщения которого больше всего отвечали: {post_with_the_most_reply(messages)}')
     print(f'ID пользователей, чьи сообщения видели больше всего уникальных пользователей: {users_with_the_highest_views(messages)}')
+    print(f'Чаще всего пользователи отправляют сообщения {the_busiest_time(messages)}')
