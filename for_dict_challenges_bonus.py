@@ -78,7 +78,26 @@ def post_with_the_most_reply(messages: list) -> str:
             break
     return id_user_max_reply_for
 
+
+def users_with_the_highest_views(messages: list) -> str:
+    seen_by_list = [
+        len(message['seen_by'])
+        for message in messages
+    ]
+    pos_max_seen_by = [
+        index for index, data in enumerate(seen_by_list)
+        if data == max(seen_by_list)
+    ]
+    ids_max_seen_by = [
+        message['id']
+        for index, message in enumerate(messages) 
+        if index in pos_max_seen_by 
+    ]
+    return str(ids_max_seen_by).strip('[]')
+
+
 if __name__ == "__main__":
     messages = generate_chat_history()
     print(f'ID пользователя, отправившего больше всего сообщений: {user_with_the_most_posts(messages)}')
     print(f'ID пользователя, на сообщения которого больше всего отвечали: {post_with_the_most_reply(messages)}')
+    print(f'ID пользователей, чьи сообщения видели больше всего уникальных пользователей: {users_with_the_highest_views(messages)}')
