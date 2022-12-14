@@ -124,30 +124,21 @@ is_male = {
     'Олег': True,
     'Миша': True,
 }
-
-MALE = 0    #Илья, я применил тут глобальные переменные. Насколько это здесь уместно? 
-FEMALE = 0  #Я привык работать со сдвиговыми регистрами (логика ПЛИСов, например), поэтому подход с глобальной переменной мне понятен
-            #Но может есть более правильный способ решения?
+list_class = []
 for student_class in school:
     class_name = student_class['class']
-    quantity_male = 0
-    quantity_female = 0
-    list_of_students = [
-        person['first_name']
+    list_of_male = [
+        'мальчик'
         for person in student_class['students']
+        if is_male[person['first_name']]
     ]
-    quantity_male = 0
-    quantity_female = 0
-    for person in list_of_students:
-        if person in is_male and is_male[person]:
-            quantity_male += 1
-        elif person in is_male and not is_male[person]:
-            quantity_female += 1
-        if quantity_male > MALE:
-            MALE = quantity_male
-            class_male = class_name
-        if quantity_female > FEMALE:
-            FEMALE = quantity_female
-            class_female = class_name
-print(f'Больше всего девочек в классе {class_female}')
-print(f'Больше всего мальчиков в классе {class_male}')
+    list_of_female = [
+        'девочка'
+        for person in student_class['students']
+        if not is_male[person['first_name']]
+    ]
+    list_class.append([class_name, len(list_of_male), len(list_of_female)])
+male_class = max(list_class, key=lambda i : i[1])[0]
+female_class = max(list_class, key=lambda i : i[2])[0]
+print(f'Больше всего девочек в классе {female_class}')
+print(f'Больше всего мальчиков в классе {male_class}')

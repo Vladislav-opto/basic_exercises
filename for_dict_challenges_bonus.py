@@ -61,7 +61,7 @@ def user_with_the_most_posts(messages: list) -> int:
         message['sent_by']
         for message in messages
     ]
-    id_max_number_messages = int(Counter(sender_list).most_common(1)[0][0])
+    id_max_number_messages = Counter(sender_list).most_common(1)[0][0]
     return id_max_number_messages
 
 
