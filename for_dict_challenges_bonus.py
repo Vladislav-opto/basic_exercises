@@ -84,14 +84,10 @@ def users_with_the_highest_views(messages: list) -> str:
         len(message['seen_by'])
         for message in messages
     ]
-    pos_max_seen_by = [
-        index for index, data in enumerate(seen_by_list)
-        if data == max(seen_by_list)
-    ]
     ids_max_seen_by = [
         message['id']
-        for index, message in enumerate(messages) 
-        if index in pos_max_seen_by 
+        for message in messages
+        if len(message['seen_by']) == max(seen_by_list)
     ]
     return str(ids_max_seen_by).strip('[]')
 
