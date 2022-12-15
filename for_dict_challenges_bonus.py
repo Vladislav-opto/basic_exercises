@@ -79,17 +79,17 @@ def post_with_the_most_reply(messages: list) -> str:
     return id_user_max_reply_for
 
 
-def users_with_the_highest_views(messages: list) -> str:
+def users_with_the_highest_views(messages: list) -> set[str]:
     seen_by_list = [
         len(message['seen_by'])
         for message in messages
     ]
-    ids_max_seen_by = [
+    max_of_seen_by_list = max(seen_by_list)
+    return {
         message['id']
         for message in messages
-        if len(message['seen_by']) == max(seen_by_list)
-    ]
-    return str(ids_max_seen_by).strip('[]')
+        if len(message['seen_by']) == max_of_seen_by_list
+    }
 
 
 def the_busiest_time(messages: list) -> str:
@@ -113,7 +113,7 @@ def the_busiest_time(messages: list) -> str:
        if message['sent_at'].hour >= 18
     ]
     dict_of_lists_sent["вечером"] = len(sent_evening)
-    return max(dict_of_lists_sent, key=dict_of_lists_sent.get)
+    return max(dict_of_lists_sent, key=dict_of_lists_sent.get) # type: ignore
 
 
 if __name__ == "__main__":
