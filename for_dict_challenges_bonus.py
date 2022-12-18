@@ -36,6 +36,7 @@ import datetime
 
 import lorem
 from collections import Counter
+from pprint import pprint
 
 
 def generate_chat_history():
@@ -99,26 +100,42 @@ def the_busiest_time(messages: list) -> str:
        for message in messages
        if message['sent_at'].hour <= 12
     ]
-    dict_of_lists_sent["утром"] = len(sent_morning)
+    dict_of_lists_sent['утром'] = len(sent_morning)
     sent_afternoon = [
         message['sent_by'] 
         for message in messages
         if message['sent_at'].hour > 12 and 
         message['sent_at'].hour < 18
     ]
-    dict_of_lists_sent["днем"] = len(sent_afternoon)
+    dict_of_lists_sent['днем'] = len(sent_afternoon)
     sent_evening = [
        message['sent_by'] 
        for message in messages
        if message['sent_at'].hour >= 18
     ]
-    dict_of_lists_sent["вечером"] = len(sent_evening)
+    dict_of_lists_sent['вечером'] = len(sent_evening)
     return max(dict_of_lists_sent, key=dict_of_lists_sent.get) # type: ignore
 
 
-if __name__ == "__main__":
+def id_max_forwarding_messages(messages: list) -> str:
+    reply_for_dict = {}
+    for message in messages:
+        if message['reply_for']: #проверяем, что на сообщение кто-то отвечал
+            if message['reply_for'] in reply_for_dict: #если такой ключ уже есть в словаре
+                reply_for_dict[message['reply_for']].append(message['id']) #то добавляем к ключу значение 
+            else:
+                reply_for_dict[message['reply_for']] = [message['id']] #а если ключа не было, то добавляем пару ключ-значение
+    reply_for_len_dict = {
+        key: len(value)
+        for key, value in reply_for_dict.items() 
+    }
+    return sorted(reply_for_len_dict, key=reply_for_len_dict.get, reverse=True)[0]  
+
+
+if __name__ == '__main__':
     messages = generate_chat_history()
     print(f'ID пользователя, отправившего больше всего сообщений: {user_with_the_most_posts(messages)}')
     print(f'ID пользователя, на сообщения которого больше всего отвечали: {post_with_the_most_reply(messages)}')
     print(f'ID пользователей, чьи сообщения видели больше всего уникальных пользователей: {users_with_the_highest_views(messages)}')
     print(f'Чаще всего пользователи отправляют сообщения {the_busiest_time(messages)}')
+    print(f'Началом самому длинному треду послужило сообщение: {id_max_forwarding_messages(messages)}')
