@@ -34,7 +34,7 @@ import random
 import uuid
 import datetime
 
-import lorem
+import lorem # type: ignore
 from collections import Counter
 from pprint import pprint
 
@@ -123,19 +123,29 @@ def find_the_busiest_time(messages: list) -> str:
     return result_time_of_day
 
 
-def find_id_max_forwarding_messages(messages: list) -> str:
-    reply_for_dict = {}
-    for message in messages:
-        if message['reply_for']: #это сообщение является ответом на другое?
-            if message['reply_for'] in reply_for_dict: #если такой ключ уже есть в словаре
-                reply_for_dict[message['reply_for']].append(message['id']) #то добавляем к ключу значение 
-            else:
-                reply_for_dict[message['reply_for']] = [message['id']] #а если ключа не было, то добавляем пару ключ-значение
-    reply_for_len_dict = {
-        key: len(value)
-        for key, value in reply_for_dict.items() 
-    }
-    return sorted(reply_for_len_dict, key=reply_for_len_dict.get, reverse=True)[0]  
+def find_id_max_reply_chain(messages: list) -> str|None:
+    users_without_reply_for = [
+        message
+        for message in messages
+        if not message['reply_for']
+    ]      
+    users_with_reply_for = [
+        message
+        for message in messages
+        if message['reply_for']
+    ] 
+    user_with_len_reply_for = {} 
+    for user_id_without in users_without_reply_for: #берем пользователя с "первоначальным" сообщением
+        thread_length = 0
+        element_to_compare = user_id_without['id']
+        for count in range (0, len(users_with_reply_for)):
+            for user_id_with in users_with_reply_for: #берем пользователя с сообщением-ответом
+                if user_id_with['reply_for'] == element_to_compare:
+                    thread_length += 1
+                    element_to_compare = user_id_with['id']
+                    break
+        user_with_len_reply_for[user_id_without['id']] = thread_length #формируем словарь - id: длина треда
+    return max(user_with_len_reply_for, key= lambda key: user_with_len_reply_for[key])
 
 
 if __name__ == '__main__':
@@ -144,4 +154,4 @@ if __name__ == '__main__':
     print(f'ID пользователя, на сообщения которого больше всего отвечали: {find_post_with_the_most_reply(messages)}')
     print(f'ID пользователей, чьи сообщения видели больше всего уникальных пользователей: {find_users_with_the_highest_views(messages)}')
     print(f'Чаще всего пользователи отправляют сообщения {find_the_busiest_time(messages)}')
-    print(f'Началом самому длинному треду послужило сообщение: {find_id_max_forwarding_messages(messages)}')
+    print(f'Началом самому длинному треду послужило сообщение от пользователя: {find_id_max_reply_chain(messages)}')
