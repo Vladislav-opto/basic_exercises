@@ -57,7 +57,7 @@ def generate_chat_history():
     return messages
 
 
-def user_with_the_most_posts(messages: list) -> int:
+def find_user_with_the_most_posts(messages: list) -> int:
     sender_list = [
         message['sent_by']
         for message in messages
@@ -66,7 +66,7 @@ def user_with_the_most_posts(messages: list) -> int:
     return id_max_number_messages
 
 
-def post_with_the_most_reply(messages: list) -> str:
+def find_post_with_the_most_reply(messages: list) -> str:
     reply_for_list = [
         message['reply_for']
         for message in messages
@@ -80,7 +80,7 @@ def post_with_the_most_reply(messages: list) -> str:
     return id_user_max_reply_for
 
 
-def users_with_the_highest_views(messages: list) -> set[str]:
+def find_users_with_the_highest_views(messages: list) -> set[str]:
     seen_by_list = [
         len(message['seen_by'])
         for message in messages
@@ -93,34 +93,40 @@ def users_with_the_highest_views(messages: list) -> set[str]:
     }
 
 
-def the_busiest_time(messages: list) -> str:
-    dict_of_lists_sent = {}
+def find_the_busiest_time(messages: list) -> str:
+    NOON_HOUR = 12
+    EVENING_HOUR = 18
     sent_morning = [
        message['sent_by'] 
        for message in messages
-       if message['sent_at'].hour <= 12
+       if message['sent_at'].hour <= NOON_HOUR
     ]
-    dict_of_lists_sent['утром'] = len(sent_morning)
     sent_afternoon = [
         message['sent_by'] 
         for message in messages
-        if message['sent_at'].hour > 12 and 
-        message['sent_at'].hour < 18
+        if message['sent_at'].hour > NOON_HOUR and 
+        message['sent_at'].hour < EVENING_HOUR
     ]
-    dict_of_lists_sent['днем'] = len(sent_afternoon)
     sent_evening = [
        message['sent_by'] 
        for message in messages
-       if message['sent_at'].hour >= 18
+       if message['sent_at'].hour >= EVENING_HOUR
     ]
-    dict_of_lists_sent['вечером'] = len(sent_evening)
-    return max(dict_of_lists_sent, key=dict_of_lists_sent.get) # type: ignore
+    max_len_sent = len(sent_morning)
+    result_time_of_day = 'утром'
+    if len(sent_afternoon) > max_len_sent:
+        max_len_sent = len(sent_afternoon)
+        result_time_of_day = 'днем'
+    if len(sent_evening) > max_len_sent:
+        max_len_sent = len(sent_evening)
+        result_time_of_day = 'вечером'
+    return result_time_of_day
 
 
-def id_max_forwarding_messages(messages: list) -> str:
+def find_id_max_forwarding_messages(messages: list) -> str:
     reply_for_dict = {}
     for message in messages:
-        if message['reply_for']: #проверяем, что на сообщение кто-то отвечал
+        if message['reply_for']: #это сообщение является ответом на другое?
             if message['reply_for'] in reply_for_dict: #если такой ключ уже есть в словаре
                 reply_for_dict[message['reply_for']].append(message['id']) #то добавляем к ключу значение 
             else:
@@ -134,8 +140,8 @@ def id_max_forwarding_messages(messages: list) -> str:
 
 if __name__ == '__main__':
     messages = generate_chat_history()
-    print(f'ID пользователя, отправившего больше всего сообщений: {user_with_the_most_posts(messages)}')
-    print(f'ID пользователя, на сообщения которого больше всего отвечали: {post_with_the_most_reply(messages)}')
-    print(f'ID пользователей, чьи сообщения видели больше всего уникальных пользователей: {users_with_the_highest_views(messages)}')
-    print(f'Чаще всего пользователи отправляют сообщения {the_busiest_time(messages)}')
-    print(f'Началом самому длинному треду послужило сообщение: {id_max_forwarding_messages(messages)}')
+    print(f'ID пользователя, отправившего больше всего сообщений: {find_user_with_the_most_posts(messages)}')
+    print(f'ID пользователя, на сообщения которого больше всего отвечали: {find_post_with_the_most_reply(messages)}')
+    print(f'ID пользователей, чьи сообщения видели больше всего уникальных пользователей: {find_users_with_the_highest_views(messages)}')
+    print(f'Чаще всего пользователи отправляют сообщения {find_the_busiest_time(messages)}')
+    print(f'Началом самому длинному треду послужило сообщение: {find_id_max_forwarding_messages(messages)}')
