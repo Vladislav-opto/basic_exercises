@@ -33,17 +33,15 @@ messages = [
 import random
 import uuid
 import datetime
-
-import lorem # type: ignore
+import lorem
 from collections import Counter
-from pprint import pprint
 
 
-def generate_chat_history():
+def generate_chat_history() -> list:
     messages_amount = random.randint(200, 1000)
     users_ids = list({random.randint(1, 10000) for _ in range(random.randint(5, 20))})
     sent_at = datetime.datetime.now() - datetime.timedelta(days=100)
-    messages = []
+    messages: list = []
     for _ in range(messages_amount):
         sent_at += datetime.timedelta(minutes=random.randint(0, 240))
         messages.append({
@@ -80,37 +78,34 @@ def find_post_with_the_most_reply(messages: list) -> str:
     return id_user_max_reply_for
 
 
-def find_users_with_the_highest_views(messages: list) -> set[str]:
-    seen_by_list = [
-        len(message['seen_by'])
-        for message in messages
-    ]
-    max_of_seen_by_list = max(seen_by_list)
-    return {
-        message['id']
-        for message in messages
-        if len(message['seen_by']) == max_of_seen_by_list
-    }
+def find_user_with_the_highest_views(messages: list) -> str:
+    dict_users_views: dict = {}
+    for message in messages:
+        if message['id'] in dict_users_views:
+            dict_users_views[message['id']] += len(message['seen_by'])
+        else:
+            dict_users_views[message['id']] = len(message['seen_by'])
+    return max(dict_users_views, key= lambda key: dict_users_views[key])
 
 
 def find_the_busiest_time(messages: list) -> str:
-    NOON_HOUR = 12
-    EVENING_HOUR = 18
+    noon_hour = 12
+    evening_hour = 18
     sent_morning = [
        message['sent_by'] 
        for message in messages
-       if message['sent_at'].hour <= NOON_HOUR
+       if message['sent_at'].hour <= noon_hour
     ]
     sent_afternoon = [
         message['sent_by'] 
         for message in messages
-        if message['sent_at'].hour > NOON_HOUR and 
-        message['sent_at'].hour < EVENING_HOUR
+        if message['sent_at'].hour > noon_hour and 
+        message['sent_at'].hour < evening_hour
     ]
     sent_evening = [
        message['sent_by'] 
        for message in messages
-       if message['sent_at'].hour >= EVENING_HOUR
+       if message['sent_at'].hour >= evening_hour
     ]
     max_len_sent = len(sent_morning)
     result_time_of_day = 'утром'
@@ -123,35 +118,40 @@ def find_the_busiest_time(messages: list) -> str:
     return result_time_of_day
 
 
+def make_dict(input_list_without_reply: list, input_list_with_reply: list) -> dict:
+    message_with_len_reply_for = {} 
+    for message_without_reply_for in input_list_without_reply: #берем пользователя с "первоначальным" сообщением
+        thread_length = 0
+        element_to_compare = message_without_reply_for['id']
+        for _ in range (0, len(input_list_with_reply)):
+            for message_with_reply_for in input_list_with_reply: #берем пользователя с сообщением-ответом
+                if message_with_reply_for['reply_for'] == element_to_compare:
+                    thread_length += 1
+                    element_to_compare = message_with_reply_for['id']
+                    break
+        message_with_len_reply_for[message_without_reply_for['id']] = thread_length #формируем словарь - id: длина треда
+    return message_with_len_reply_for    
+
+
 def find_id_max_reply_chain(messages: list) -> str|None:
-    users_without_reply_for = [
+    messages_without_reply_for = [
         message
         for message in messages
         if not message['reply_for']
     ]      
-    users_with_reply_for = [
+    messages_with_reply_for = [
         message
         for message in messages
         if message['reply_for']
-    ] 
-    user_with_len_reply_for = {} 
-    for user_id_without in users_without_reply_for: #берем пользователя с "первоначальным" сообщением
-        thread_length = 0
-        element_to_compare = user_id_without['id']
-        for count in range (0, len(users_with_reply_for)):
-            for user_id_with in users_with_reply_for: #берем пользователя с сообщением-ответом
-                if user_id_with['reply_for'] == element_to_compare:
-                    thread_length += 1
-                    element_to_compare = user_id_with['id']
-                    break
-        user_with_len_reply_for[user_id_without['id']] = thread_length #формируем словарь - id: длина треда
-    return max(user_with_len_reply_for, key= lambda key: user_with_len_reply_for[key])
+    ]
+    dict_result = make_dict(messages_without_reply_for, messages_with_reply_for)
+    return max(dict_result, key= lambda key: dict_result[key])
 
 
 if __name__ == '__main__':
     messages = generate_chat_history()
     print(f'ID пользователя, отправившего больше всего сообщений: {find_user_with_the_most_posts(messages)}')
     print(f'ID пользователя, на сообщения которого больше всего отвечали: {find_post_with_the_most_reply(messages)}')
-    print(f'ID пользователей, чьи сообщения видели больше всего уникальных пользователей: {find_users_with_the_highest_views(messages)}')
+    print(f'ID пользователя, чьи сообщения видели больше всего уникальных пользователей: {find_user_with_the_highest_views(messages)}')
     print(f'Чаще всего пользователи отправляют сообщения {find_the_busiest_time(messages)}')
-    print(f'Началом самому длинному треду послужило сообщение от пользователя: {find_id_max_reply_chain(messages)}')
+    print(f'Началом самому длинному треду послужило сообщение: {find_id_max_reply_chain(messages)}')
