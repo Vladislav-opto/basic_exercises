@@ -5,4 +5,3 @@ settings.py
 env/
 __pycache__/
 /bot_repeater/env
-*.ini

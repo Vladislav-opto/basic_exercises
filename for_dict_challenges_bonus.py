@@ -35,6 +35,7 @@ import uuid
 import datetime
 import lorem
 from collections import Counter
+from collections import defaultdict
 
 
 def generate_chat_history() -> list:
@@ -79,12 +80,9 @@ def find_post_with_the_most_reply(messages: list) -> str:
 
 
 def find_user_with_the_highest_views(messages: list) -> str:
-    dict_users_views: dict = {}
+    dict_users_views: dict = defaultdict(int)
     for message in messages:
-        if message['id'] in dict_users_views:
-            dict_users_views[message['id']] += len(message['seen_by'])
-        else:
-            dict_users_views[message['id']] = len(message['seen_by'])
+        dict_users_views[message['id']] += len(message['seen_by'])
     return max(dict_users_views, key= lambda key: dict_users_views[key])
 
 
@@ -118,12 +116,12 @@ def find_the_busiest_time(messages: list) -> str:
     return result_time_of_day
 
 
-def make_dict(input_list_without_reply: list, input_list_with_reply: list) -> dict:
+def make_dict_id_message_len_of_reply_chain(input_list_without_reply: list, input_list_with_reply: list) -> dict:
     message_with_len_reply_for = {} 
     for message_without_reply_for in input_list_without_reply: #берем пользователя с "первоначальным" сообщением
         thread_length = 0
         element_to_compare = message_without_reply_for['id']
-        for _ in range (0, len(input_list_with_reply)):
+        for _ in range (len(input_list_with_reply)):
             for message_with_reply_for in input_list_with_reply: #берем пользователя с сообщением-ответом
                 if message_with_reply_for['reply_for'] == element_to_compare:
                     thread_length += 1
@@ -144,7 +142,7 @@ def find_id_max_reply_chain(messages: list) -> str|None:
         for message in messages
         if message['reply_for']
     ]
-    dict_result = make_dict(messages_without_reply_for, messages_with_reply_for)
+    dict_result = make_dict_id_message_len_of_reply_chain(messages_without_reply_for, messages_with_reply_for)
     return max(dict_result, key= lambda key: dict_result[key])
 
 
